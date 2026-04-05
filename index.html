@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAXUZ Portfolio - 技術と創造で、暮らしに安心と彩りを</title>
+    
+    <!-- Libraries via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script>
+        window.tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-blue': '#0047AB',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        html { scroll-behavior: smooth; }
+        body { overflow-x: hidden; }
+        
+        @keyframes rise {
+            0% { transform: translateY(110vh); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #3b82f6, 0 0 20px rgba(59, 130, 246, 0.4);
+            animation: rise linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Framer Motion access fix for CDN
+        const motion = window.Motion ? window.Motion.motion : { div: (props) => <div {...props} /> };
+
+        // Lucide Icon Helper for Standalone
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const iconRef = useRef(null);
+            useEffect(() => {
+                if (iconRef.current && window.lucide) {
+                    try {
+                        const iconData = window.lucide.icons[name];
+                        if (iconData) {
+                            iconRef.current.innerHTML = '';
+                            window.lucide.createIcons({
+                                attrs: {
+                                    class: className,
+                                    'stroke-width': 2,
+                                    width: size,
+                                    height: size
+                                },
+                                nameAttr: 'data-lucide',
+                                icons: { [name]: iconData }
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Lucide error:", e);
+                    }
+                }
+            }, [name, size, className]);
+            return <i data-lucide={name} ref={iconRef} className={className} style={{ width: size, height: size, display: 'inline-block', verticalAlign: 'middle' }}></i>;
+        };
+
+        const Section = ({ children, className, id }) => (
+            <section id={id} className={`py-20 px-6 md:px-12 lg:px-24 ${className || ''}`}>
+                {children}
+            </section>
+        );
+
+        const BusinessCard = () => {
+            const appUrl = window.location.href;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(appUrl)}`;
+
+            return (
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="max-w-md mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-slate-100 relative group"
+                >
+                    <div className="h-32 bg-gradient-to-br from-brand-blue to-blue-800 relative">
+                        <div className="absolute top-4 right-6 text-white/20">
+                            <Icon name="Anchor" size={80} className="rotate-12" />
+                        </div>
+                    </div>
+                    
+                    <div className="px-8 pb-8 pt-0 -mt-12 relative">
+                        <div className="w-24 h-24 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-4 border-4 border-white overflow-hidden">
+                            <div className="w-full h-full bg-slate-100 flex items-center justify-center text-brand-blue">
+                                <img 
+                                    src="profile.jpg" 
+                                    alt="山元 孝志" 
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.src = "https://picsum.photos/seed/takashi/400/400"; }}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="mb-6">
+                            <h4 className="text-2xl font-bold text-slate-900">山元 孝志</h4>
+                            <p className="text-brand-blue font-bold text-sm tracking-widest uppercase">Takashi Yamamoto</p>
+                            <p className="text-slate-500 font-medium mt-1">LAXUZ 代表 / 技術者・クリエイター</p>
+                        </div>
+
+                        <div className="space-y-4 mb-8">
+                            <div className="flex items-center gap-3 text-slate-600">
+                                <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center shrink-0">
+                                    <Icon name="Mail" size={16} className="text-brand-blue" />
+                                </div>
+                                <span className="text-sm font-medium">window@laxuz.net</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-slate-600">
+                                <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center shrink-0">
+                                    <Icon name="MapPin" size={16} className="text-brand-blue" />
+                                </div>
+                                <span className="text-sm font-medium">大阪府および近隣地域</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-slate-600">
+                                <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center shrink-0">
+                                    <Icon name="ShieldCheck" size={16} className="text-brand-blue" />
+                                </div>
+                                <span className="text-sm font-medium">一級小型船舶操縦士 / 第二種電気工事士</span>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-4 items-center pt-6 border-t border-slate-100">
+                            <div className="shrink-0">
+                                <img src={qrUrl} alt="QR Code" className="w-20 h-20 rounded-lg border border-slate-100" />
+                            </div>
+                            <div className="flex-grow">
+                                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Scan to save</p>
+                                <div className="flex gap-2">
+                                    <button onClick={() => window.print()} className="flex-1 bg-slate-900 text-white text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors">
+                                        <Icon name="Share2" size={14} /> Share
+                                    </button>
+                                    <a href="mailto:window@laxuz.net" className="flex-1 bg-brand-blue text-white text-xs font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition-colors">
+                                        <Icon name="Download" size={14} /> Contact
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            );
+        };
+
+        const Card = ({ title, description, icon, tags }) => (
+            <motion.div whileHover={{ y: -5 }} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+                <div className="w-12 h-12 bg-brand-blue/10 rounded-xl flex items-center justify-center mb-6 text-brand-blue">
+                    <Icon name={icon} size={24} />
+                </div>
+                <h3 className="text-xl font-bold mb-3">{title}</h3>
+                <p className="text-slate-600 leading-relaxed mb-6 flex-grow">{description}</p>
+                {tags && (
+                    <div className="flex flex-wrap gap-2">
+                        {tags.map(tag => (
+                            <span key={tag} className="text-xs font-medium px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full">{tag}</span>
+                        ))}
+                    </div>
+                )}
+            </motion.div>
+        );
+
+        const Particles = () => (
+            <div className="fixed inset-0 overflow-hidden pointer-events-none z-[99999] bg-transparent">
+                {[...Array(40)].map((_, i) => (
+                    <div key={i} className="particle" style={{
+                        left: `${(i * 7.7) % 100}%`,
+                        animationDelay: `${-(i * 2.5)}s`,
+                        animationDuration: `${12 + (i % 8)}s`
+                    }} />
+                ))}
+            </div>
+        );
+
+        function App() {
+            return (
+                <div className="min-h-screen font-sans relative">
+                    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+                        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                            <div className="text-xl font-bold tracking-tighter text-brand-blue">LAXUZ</div>
+                            <div className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
+                                <a href="#card" className="hover:text-brand-blue transition-colors">Business Card</a>
+                                <a href="#concept" className="hover:text-brand-blue transition-colors">Concept</a>
+                                <a href="#services" className="hover:text-brand-blue transition-colors">Services</a>
+                                <a href="#licenses" className="hover:text-brand-blue transition-colors">Licenses</a>
+                                <a href="#about" className="hover:text-brand-blue transition-colors">About</a>
+                                <a href="#contact" className="hover:text-brand-blue transition-colors">Contact</a>
+                            </div>
+                            <a href="#contact" className="bg-brand-blue text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition-all shadow-md shadow-blue-200">Get in Touch</a>
+                        </div>
+                    </nav>
+
+                    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-slate-900">
+                        <div className="absolute inset-0 z-0">
+                            <img src="https://images.unsplash.com/photo-1505144808405-126af9222332?auto=format&fit=crop&q=80&w=2000" alt="Ocean" className="w-full h-full object-cover opacity-40" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/60 to-slate-900" />
+                        </div>
+                        <div className="relative z-10 text-center px-6 max-w-4xl">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+                                <span className="inline-block py-1 px-3 rounded-full bg-brand-blue/20 text-brand-blue text-xs font-bold tracking-widest uppercase mb-6 border border-brand-blue/30 backdrop-blur-sm">Technical Expertise & Digital Creativity</span>
+                                <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">技術と創造で、<br />暮らしに安心と彩りを</h1>
+                                <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">「見えないところまで、丁寧に。領域を超えて、誠実に。」<br />大阪を拠点に、確かな技術と最先端のAIで、あなたの毎日を豊かにします。</p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <a href="#services" className="bg-white text-slate-900 px-8 py-4 rounded-full font-bold hover:bg-slate-100 transition-all flex items-center justify-center gap-2 group">Explore Services <Icon name="ArrowRight" size={18} className="group-hover:translate-x-1 transition-transform" /></a>
+                                    <a href="#about" className="bg-white/10 text-white border border-white/20 backdrop-blur-md px-8 py-4 rounded-full font-bold hover:bg-white/20 transition-all">About LAXUZ</a>
+                                </div>
+                            </motion.div>
+                        </div>
+                        <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50"><Icon name="ChevronDown" size={32} /></motion.div>
+                    </section>
+
+                    <Section id="card" className="bg-slate-50 -mt-20 relative z-20 pt-0">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="text-center mb-12">
+                                <h2 className="text-sm font-bold text-brand-blue tracking-widest uppercase mb-4">Digital Business Card</h2>
+                                <h3 className="text-2xl font-bold text-slate-900">スマートフォンでスキャンして保存</h3>
+                            </div>
+                            <BusinessCard />
+                        </div>
+                    </Section>
+
+                    <Section id="concept" className="bg-white">
+                        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                            <div>
+                                <h2 className="text-sm font-bold text-brand-blue tracking-widest uppercase mb-4">Concept</h2>
+                                <h3 className="text-3xl md:text-4xl font-bold mb-8 leading-tight">誠実さという一本の軸で、<br />異なる分野を繋ぐ。</h3>
+                                <div className="space-y-6 text-slate-600 leading-relaxed text-lg">
+                                    <p>日々の暮らしを整える確かな技術、最先端のAIが描く表現、そして大海原で培った責任感。</p>
+                                    <p>LAXUZ（ラグザス）は、大阪を拠点に、異なる分野のスキルを「誠実さ」という一本の軸で繋ぎ、お客様の毎日をより快適に、より豊かにするお手伝いをいたします。</p>
+                                </div>
+                            </div>
+                            <div className="relative">
+                                <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                                    <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1000" alt="Work" className="w-full h-full object-cover" />
+                                </div>
+                                <div className="absolute -bottom-6 -left-6 bg-brand-blue text-white p-8 rounded-2xl shadow-xl hidden lg:block">
+                                    <Icon name="ShieldCheck" size={40} className="mb-4" />
+                                    <div className="text-2xl font-bold">100% Sincerity</div>
+                                    <div className="text-blue-100 text-sm">Quality in every detail</div>
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+
+                    <Section id="services" className="bg-slate-50">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="text-center mb-16">
+                                <h2 className="text-sm font-bold text-brand-blue tracking-widest uppercase mb-4">Services / Skills</h2>
+                                <h3 className="text-3xl md:text-4xl font-bold">暮らしを整え、可能性を広げる</h3>
+                            </div>
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                <Card icon="Wind" title="エアコンクリーニング" description="「空気が変われば、心も整う。」を大切に、内部の汚れを徹底洗浄。大阪近郊を拠点に、フットワーク軽く丁寧な作業をお届けします。" tags={["内部洗浄", "除菌消臭", "大阪近郊"]} />
+                                <Card icon="Zap" title="第二種電気工事士" description="安全を第一に考えた確実な施工。暮らしのインフラを支えるパートナーとして、コンセント増設から照明設置まで幅広く対応します。" tags={["国家資格", "安全第一", "インフラ保守"]} />
+                                <Card icon="Palette" title="AIクリエイター / デジタルアート" description="最新のテクノロジーを駆使し、日常に彩りを添えるアートを制作。デジタルならではの新しい価値と楽しさを形にしています。" tags={["AI生成", "デジタルカード", "クリエイティブ"]} />
+                            </div>
+                        </div>
+                    </Section>
+
+                    <Section id="licenses" className="bg-slate-900 text-white overflow-hidden relative">
+                        <div className="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none"><Icon name="Anchor" size={600} className="translate-x-1/4 -translate-y-1/4" /></div>
+                        <div className="max-w-7xl mx-auto relative z-10">
+                            <div className="grid lg:grid-cols-2 gap-16 items-center">
+                                <div>
+                                    <h2 className="text-sm font-bold text-brand-blue tracking-widest uppercase mb-4">Professional Licenses</h2>
+                                    <h3 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">大海原で培った、<br />揺るぎない責任感。</h3>
+                                    <div className="space-y-6 text-slate-300 leading-relaxed text-lg">
+                                        <div className="flex gap-4 items-start">
+                                            <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center shrink-0 text-white"><Icon name="Anchor" size={24} /></div>
+                                            <div>
+                                                <h4 className="text-xl font-bold text-white mb-2">一級小型船舶操縦士</h4>
+                                                <p>総トン数20トン未満、全世界の海を航行可能な国家資格を保有。大型のフィッシングボートや豪華なクルーザー、さらには数十人を乗せる屋形船まで操船可能です。</p>
+                                            </div>
+                                        </div>
+                                        <p>高度な海図作成能力と気象読解、そして何より「多くの命を預かる責任感」の証です。この姿勢は、すべての現場作業における「妥協のない安全管理」へと繋がっています。</p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&q=80&w=600" alt="Boat" className="rounded-2xl aspect-[4/5] object-cover" />
+                                    <img src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?auto=format&fit=crop&q=80&w=600" alt="Sea" className="rounded-2xl aspect-[4/5] object-cover mt-8" />
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+
+                    <Section id="about" className="bg-white">
+                        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
+                            <div className="relative">
+                                <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                                    <img src="profile.jpg" alt="山元 孝志" className="w-full h-full object-cover" onError={(e) => { e.target.src = "https://picsum.photos/seed/takashi/800/800"; }} />
+                                </div>
+                                <div className="absolute -bottom-6 -right-6 bg-brand-blue text-white p-8 rounded-2xl shadow-xl hidden lg:block">
+                                    <div className="text-3xl font-bold mb-1">誠実</div>
+                                    <div className="text-blue-200 text-sm tracking-widest uppercase">Sincerity</div>
+                                </div>
+                            </div>
+                            <div className="space-y-8 text-slate-600 leading-relaxed text-lg">
+                                <h2 className="text-sm font-bold text-brand-blue tracking-widest uppercase">About Me</h2>
+                                <div className="mb-6">
+                                    <h3 className="text-4xl font-bold text-slate-900 mb-2">代表 山元 孝志</h3>
+                                    <p className="text-xl font-medium text-slate-500 tracking-tight">Yamamoto Takashi</p>
+                                </div>
+                                <div className="space-y-6">
+                                    <p>私は、リアルの現場で汗を流す「技術者」であり、デジタルの海で可能性を探求する「クリエイター」です。</p>
+                                    <p>エアコンの奥にある汚れを取り除くときも、AIで新しいビジュアルを生成するときも、あるいは20トンの船を操り舵を握るときも。私の中にあるのは、常に「誠実であること」というシンプルな想いです。</p>
+                                    <p className="font-bold text-slate-900 italic border-l-4 border-brand-blue pl-4">"派手な宣伝よりも、目の前の一人ひとりに寄り添った仕事を。"</p>
+                                    <p>「LAXUZに頼んでよかった」と思っていただけるよう、一歩一歩丁寧に対応いたします。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+
+                    <Section id="contact" className="bg-brand-blue text-white">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="grid lg:grid-cols-2 gap-16 items-center">
+                                <div>
+                                    <h2 className="text-sm font-bold text-blue-200 tracking-widest uppercase mb-4">Contact</h2>
+                                    <h3 className="text-4xl md:text-5xl font-bold mb-8">お気軽にご相談ください</h3>
+                                    <p className="text-xl text-blue-100 mb-10">大阪・近郊エリアを中心に対応しております。<br />ご相談やご依頼は、下記よりお気軽にご連絡ください。</p>
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><Icon name="ShieldCheck" size={20} /></div>
+                                            <div><div className="text-blue-200 text-sm">Representative</div><div className="text-xl font-medium">山元 孝志 / Yamamoto Takashi</div></div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><Icon name="Mail" size={20} /></div>
+                                            <div><div className="text-blue-200 text-sm">Email</div><a href="mailto:window@laxuz.net" className="text-xl font-medium hover:underline">window@laxuz.net</a></div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center"><Icon name="MapPin" size={20} /></div>
+                                            <div><div className="text-blue-200 text-sm">Area</div><div className="text-xl font-medium">大阪府および近隣地域</div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-white rounded-3xl p-8 md:p-12 text-slate-900 shadow-2xl">
+                                    <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            <div className="space-y-2"><label className="text-sm font-bold text-slate-700">お名前</label><input type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all" placeholder="山田 太郎" /></div>
+                                            <div className="space-y-2"><label className="text-sm font-bold text-slate-700">メールアドレス</label><input type="email" className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all" placeholder="example@mail.com" /></div>
+                                        </div>
+                                        <div className="space-y-2"><label className="text-sm font-bold text-slate-700">ご相談内容</label><select className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"><option>エアコンクリーニングについて</option><option>電気工事について</option><option>デジタルクリエイティブについて</option><option>その他</option></select></div>
+                                        <div className="space-y-2"><label className="text-sm font-bold text-slate-700">メッセージ</label><textarea rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all" placeholder="ご自由に入力ください"></textarea></div>
+                                        <button className="w-full bg-brand-blue text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">送信する</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+
+                    <footer className="bg-slate-50 py-12 border-t border-slate-200">
+                        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+                            <div className="text-2xl font-bold tracking-tighter text-brand-blue">LAXUZ</div>
+                            <div className="text-slate-500 text-sm">© {new Date().getFullYear()} LAXUZ. All rights reserved.</div>
+                            <div className="flex gap-6"><a href="#" className="text-slate-400 hover:text-brand-blue transition-colors"><Icon name="ExternalLink" size={20} /></a></div>
+                        </div>
+                    </footer>
+                    <Particles />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
