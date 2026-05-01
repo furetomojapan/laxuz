@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ふれとも | サービス一覧</title>
+<meta name="description" content="スタンプ作成、ポートフォリオ作成、NFCカード作成、エアコンクリーニングの4つのサービスをご案内するポータルサイトです。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ===== リセット & ベース ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif;
+    color: #333;
+    background: #fff8e7;
+    overflow-x: hidden;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ===== 背景カラフルなグラデ＆動く泡 ===== */
+  .bg {
+    position: fixed; inset: 0; z-index: -2;
+    background: linear-gradient(135deg, #ffe5ec 0%, #fff5cc 25%, #d4f1f9 60%, #ffe0f5 100%);
+    background-size: 300% 300%;
+    animation: bgShift 18s ease infinite;
+  }
+  @keyframes bgShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .blobs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(40px); opacity: 0.55;
+    animation: float 14s ease-in-out infinite;
+  }
+  .blob:nth-child(1) { width: 320px; height: 320px; background: #ffb6d9; top: -80px; left: -80px; animation-delay: 0s; }
+  .blob:nth-child(2) { width: 260px; height: 260px; background: #ffe277; top: 30%; right: -60px; animation-delay: 3s; }
+  .blob:nth-child(3) { width: 360px; height: 360px; background: #9be7ff; bottom: -120px; left: 20%; animation-delay: 6s; }
+  .blob:nth-child(4) { width: 220px; height: 220px; background: #c5b3ff; top: 50%; left: 40%; animation-delay: 9s; }
+  @keyframes float {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50%      { transform: translate(30px,-30px) scale(1.15); }
+  }
+
+  /* ===== ヘッダー ===== */
+  header {
+    text-align: center;
+    padding: 80px 20px 50px;
+    position: relative;
+  }
+  .logo-emoji {
+    font-size: 72px;
+    display: inline-block;
+    animation: bounce 2.4s ease-in-out infinite;
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-12px) rotate(3deg); }
+  }
+  h1 {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 900;
+    margin-top: 12px;
+    background: linear-gradient(90deg, #ff6b9d, #ffa94d, #ffd93d, #6bcf7f, #4d96ff, #c779ff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow 6s linear infinite;
+    letter-spacing: 0.04em;
+  }
+  @keyframes rainbow {
+    to { background-position: 300% 0; }
+  }
+  .subtitle {
+    margin-top: 14px;
+    font-size: clamp(14px, 2.4vw, 18px);
+    color: #555;
+    font-weight: 500;
+  }
+  .subtitle .pop { color: #ff6b9d; font-weight: 700; }
+
+  /* ===== カードグリッド ===== */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 24px 100px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 28px;
+  }
+
+  .card {
+    --card-color: #ff6b9d;
+    --card-color-2: #ffa4c5;
+    position: relative;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 34px 26px 28px;
+    text-align: center;
+    box-shadow:
+      0 10px 0 rgba(0,0,0,0.06),
+      0 18px 40px rgba(0,0,0,0.08);
+    transition: transform 0.45s cubic-bezier(.2,.9,.3,1.4), box-shadow 0.4s ease;
+    overflow: hidden;
+    border: 3px solid #fff;
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    animation: cardIn 0.7s cubic-bezier(.2,.9,.3,1.4) forwards;
+  }
+  .card:nth-child(1) { animation-delay: 0.1s; }
+  .card:nth-child(2) { animation-delay: 0.25s; }
+  .card:nth-child(3) { animation-delay: 0.4s; }
+  .card:nth-child(4) { animation-delay: 0.55s; }
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card::before {
+    content: "";
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 8px;
+    background: linear-gradient(90deg, var(--card-color), var(--card-color-2));
+  }
+  .card::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 20% 0%, var(--card-color-2) 0%, transparent 45%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .card:hover {
+    transform: translateY(-14px) rotate(-1deg);
+    box-shadow:
+      0 16px 0 rgba(0,0,0,0.05),
+      0 30px 60px rgba(0,0,0,0.18);
+  }
+  .card:hover::after { opacity: 0.18; }
+
+  .card-icon {
+    font-size: 64px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.5s cubic-bezier(.2,.9,.3,1.6);
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.14));
+  }
+  .card-icon svg {
+    width: 100px;
+    height: 84px;
+    display: block;
+  }
+  .card:hover .card-icon {
+    transform: rotate(-8deg) scale(1.15);
+  }
+
+  .card-title {
+    margin-top: 14px;
+    font-size: 22px;
+    font-weight: 900;
+    color: #2b2b2b;
+    letter-spacing: 0.02em;
+  }
+  .card-tag {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--card-color);
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+  .card-desc {
+    margin-top: 14px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+    min-height: 4.8em;
+  }
+  .card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 12px 26px;
+    background: linear-gradient(135deg, var(--card-color), var(--card-color-2));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    border-radius: 999px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.1), 0 8px 18px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    z-index: 1;
+  }
+  .card-btn .arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  .card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.1), 0 12px 24px rgba(0,0,0,0.18);
+  }
+  .card-btn:hover .arrow { transform: translateX(4px); }
+  .card-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.1); }
+
+  /* ===== 各カードのテーマカラー ===== */
+  .card.stamp     { --card-color: #ff6b9d; --card-color-2: #ffa4c5; }
+  .card.portfolio { --card-color: #4d96ff; --card-color-2: #87c1ff; }
+  .card.nfc       { --card-color: #6bcf7f; --card-color-2: #a8e6b8; }
+  .card.aircon    { --card-color: #ffa94d; --card-color-2: #ffd093; }
+
+  /* ===== カードの装飾ドット ===== */
+  .deco {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .deco.d1 { width: 18px; height: 18px; top: 18px; right: 18px; background: var(--card-color); }
+  .deco.d2 { width: 8px; height: 8px; top: 26px; right: 50px; background: var(--card-color-2); }
+  .deco.d3 { width: 12px; height: 12px; bottom: 18px; left: 18px; background: var(--card-color-2); }
+
+  /* ===== フッター ===== */
+  footer {
+    text-align: center;
+    padding: 30px 20px 50px;
+    color: #888;
+    font-size: 13px;
+  }
+  footer .heart {
+    color: #ff6b9d;
+    display: inline-block;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.25); }
+  }
+
+  /* ===== レスポンシブ ===== */
+  @media (max-width: 600px) {
+    header { padding: 50px 16px 30px; }
+    .logo-emoji { font-size: 56px; }
+    main { padding: 20px 16px 80px; }
+    .cards { gap: 20px; }
+    .card { padding: 28px 20px 24px; border-radius: 22px; }
+    .card-icon { font-size: 54px; }
+    .card-title { font-size: 19px; }
+    .card-desc { font-size: 13px; min-height: auto; }
+  }
+
+  /* ===== 紙吹雪 ===== */
+  .confetti {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    width: 10px;
+    height: 14px;
+    top: -20px;
+    will-change: transform, opacity;
+  }
+</style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="blobs" aria-hidden="true">
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+  </div>
+
+  <header>
+    <div class="logo-emoji" aria-hidden="true">🎨</div>
+    <h1>LAXUZ ポータル</h1>
+    <p class="subtitle">
+      <span class="pop">4つのサービス</span>へ、たのしくジャンプ！
+    </p>
+  </header>
+
+  <main>
+    <div class="cards">
+
+      <!-- 1. スタンプ作成ツール -->
+      <article class="card stamp" style="--card-color:#ff6b9d;--card-color-2:#ffa4c5;">
+        <span class="deco d1"></span>
+        <span class="deco d2"></span>
+        <span class="deco d3"></span>
+        <div class="card-icon">
+          <!-- LINE スタンプ風SVG -->
+          <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg">
+            <!-- LINE グリーン背景 -->
+            <rect x="4" y="2" width="92" height="72" rx="18" fill="#06C755"/>
+            <!-- 白いチャットバブル -->
+            <path d="M50 12 C30 12 16 24 16 39 C16 50 23 59 35 63 L32 74 L46 65 C47.3 65.2 48.6 65.3 50 65.3 C70 65.3 84 53.3 84 39 C84 24 70 12 50 12Z" fill="white"/>
+            <!-- スタンプの顔 - 目 -->
+            <ellipse cx="39" cy="38" rx="4.5" ry="5" fill="#06C755"/>
+            <ellipse cx="61" cy="38" rx="4.5" ry="5" fill="#06C755"/>
+            <circle cx="40.5" cy="37" r="1.5" fill="white"/>
+            <circle cx="62.5" cy="37" r="1.5" fill="white"/>
+            <!-- ほっぺ -->
+            <ellipse cx="33" cy="44" rx="5" ry="3" fill="#ffb3c6" opacity="0.7"/>
+            <ellipse cx="67" cy="44" rx="5" ry="3" fill="#ffb3c6" opacity="0.7"/>
+            <!-- 笑顔 -->
+            <path d="M38 47 Q50 56 62 47" stroke="#06C755" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- スタンプ下の影 -->
+            <ellipse cx="50" cy="80" rx="28" ry="4" fill="rgba(0,0,0,0.08)"/>
+          </svg>
+        </div>
+        <h2 class="card-title">スタンプ作成ツール</h2>
+        <span class="card-tag">LINE STICKER</span>
+        <p class="card-desc">オリジナルのLINEスタンプを、かんたんサクッと作っちゃおう！世界にひとつだけのスタンプづくり。</p>
+        <a class="card-btn" href="stamp/index.html">
+          つくってみる <span class="arrow">→</span>
+        </a>
+      </article>
+
+      <!-- 2. ポートフォリオ作成サイト -->
+      <article class="card portfolio" style="--card-color:#4d96ff;--card-color-2:#87c1ff;">
+        <span class="deco d1"></span>
+        <span class="deco d2"></span>
+        <span class="deco d3"></span>
+        <div class="card-icon">
+          <!-- ホームページ / ブラウザ画面SVG -->
+          <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg">
+            <!-- ブラウザ本体 -->
+            <rect x="2" y="4" width="96" height="74" rx="10" fill="#eef4ff" stroke="#4d96ff" stroke-width="2.5"/>
+            <!-- タイトルバー -->
+            <rect x="2" y="4" width="96" height="20" rx="10" fill="#4d96ff"/>
+            <rect x="2" y="14" width="96" height="10" fill="#4d96ff"/>
+            <!-- ブラウザボタン -->
+            <circle cx="14" cy="14" r="3.5" fill="#ff6b6b"/>
+            <circle cx="24" cy="14" r="3.5" fill="#ffd93d"/>
+            <circle cx="34" cy="14" r="3.5" fill="#6bcf7f"/>
+            <!-- URLバー -->
+            <rect x="44" y="9" width="46" height="10" rx="5" fill="rgba(255,255,255,0.35)"/>
+            <rect x="48" y="12" width="28" height="4" rx="2" fill="rgba(255,255,255,0.6)"/>
+            <!-- ヒーローエリア -->
+            <rect x="8" y="30" width="84" height="20" rx="5" fill="#87c1ff"/>
+            <rect x="22" y="36" width="40" height="5" rx="2.5" fill="rgba(255,255,255,0.7)"/>
+            <rect x="28" y="43" width="28" height="3" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+            <!-- コンテンツカード3つ -->
+            <rect x="8"  y="56" width="26" height="16" rx="5" fill="#c8dcff"/>
+            <rect x="37" y="56" width="26" height="16" rx="5" fill="#b8d0ff"/>
+            <rect x="66" y="56" width="26" height="16" rx="5" fill="#a8c4ff"/>
+            <!-- 影 -->
+            <ellipse cx="50" cy="81" rx="30" ry="3.5" fill="rgba(77,150,255,0.15)"/>
+          </svg>
+        </div>
+        <h2 class="card-title">ポートフォリオ作成</h2>
+        <span class="card-tag">PORTFOLIO</span>
+        <p class="card-desc">あなたの作品や実績を、おしゃれなカード型サイトで世界へ発信。プロフィールも自由自在！</p>
+        <a class="card-btn" href="portfolio/index.html">
+          はじめる <span class="arrow">→</span>
+        </a>
+      </article>
+
+      <!-- 3. ふれトモカード作成サイト -->
+      <article class="card nfc" style="--card-color:#6bcf7f;--card-color-2:#a8e6b8;">
+        <span class="deco d1"></span>
+        <span class="deco d2"></span>
+        <span class="deco d3"></span>
+        <div class="card-icon">
+          <!-- 名刺デザイン SVG -->
+          <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg">
+            <!-- 影 -->
+            <rect x="12" y="20" width="82" height="52" rx="8" fill="rgba(0,0,0,0.09)"/>
+            <!-- 名刺本体 -->
+            <rect x="6" y="14" width="82" height="52" rx="8" fill="white" stroke="#a8e6b8" stroke-width="2"/>
+            <!-- 左カラーライン -->
+            <rect x="6" y="14" width="20" height="52" rx="8" fill="#6bcf7f"/>
+            <rect x="16" y="14" width="10" height="52" fill="#6bcf7f"/>
+            <!-- プロフィール円 -->
+            <circle cx="16" cy="40" r="9" fill="white"/>
+            <circle cx="16" cy="37" r="4" fill="#a8e6b8"/>
+            <path d="M8.5 47 Q16 42 23.5 47" fill="#a8e6b8"/>
+            <!-- 氏名ライン（太め） -->
+            <rect x="32" y="24" width="48" height="7" rx="3.5" fill="#2b2b2b"/>
+            <!-- 肩書き -->
+            <rect x="32" y="36" width="34" height="5" rx="2.5" fill="#aaa"/>
+            <!-- 連絡先ライン -->
+            <rect x="32" y="46" width="44" height="4" rx="2" fill="#ddd"/>
+            <rect x="32" y="54" width="38" height="4" rx="2" fill="#ddd"/>
+            <!-- かざすマーク（右下） -->
+            <path d="M78 56 Q80 52 76 50" stroke="#6bcf7f" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M82 58 Q86 52 80 47" stroke="#6bcf7f" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+            <path d="M86 60 Q92 52 84 44" stroke="#6bcf7f" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.35"/>
+            <!-- 影 -->
+            <ellipse cx="47" cy="81" rx="28" ry="3" fill="rgba(107,207,127,0.2)"/>
+          </svg>
+        </div>
+        <h2 class="card-title">ふれトモカード作成</h2>
+        <span class="card-tag">ふれトモカード</span>
+        <p class="card-desc">スマホをカードにかざすだけで、お店の情報やSNSをすぐに見てもらえる魔法のカード！</p>
+        <a class="card-btn" href="nfc/index.html">
+          つくる <span class="arrow">→</span>
+        </a>
+      </article>
+
+      <!-- 4. エアコンクリーニング -->
+      <article class="card aircon" style="--card-color:#ffa94d;--card-color-2:#ffd093;">
+        <span class="deco d1"></span>
+        <span class="deco d2"></span>
+        <span class="deco d3"></span>
+        <div class="card-icon">
+          <!-- エアコン + きれいな風 SVG -->
+          <svg viewBox="0 0 100 84" xmlns="http://www.w3.org/2000/svg">
+            <!-- エアコン本体 -->
+            <rect x="6" y="10" width="88" height="34" rx="10" fill="#ffa94d"/>
+            <!-- 表面パネル -->
+            <rect x="12" y="16" width="76" height="22" rx="7" fill="#ffd093"/>
+            <!-- ディスプレイ -->
+            <rect x="20" y="21" width="18" height="12" rx="3" fill="#fff8e7"/>
+            <rect x="22" y="24" width="10" height="3" rx="1.5" fill="#ffa94d"/>
+            <rect x="22" y="29" width="7" height="2" rx="1" fill="#ffcc70"/>
+            <!-- ボタン類 -->
+            <circle cx="56" cy="27" r="4" fill="#ffa94d"/>
+            <circle cx="68" cy="27" r="4" fill="#ffa94d"/>
+            <circle cx="80" cy="27" r="4" fill="#ffa94d"/>
+            <!-- 吹き出し口 -->
+            <rect x="6" y="44" width="88" height="8" rx="4" fill="#e8883a"/>
+            <!-- 風ライン（さわやか） -->
+            <path d="M18 58 Q32 54 46 58 Q60 62 74 58" stroke="#87d4f5" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M24 66 Q36 62 50 66 Q64 70 76 66" stroke="#87d4f5" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+            <path d="M28 74 Q40 70 54 74 Q66 78 80 74" stroke="#87d4f5" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.45"/>
+            <!-- キラキラ -->
+            <text x="88" y="58" font-size="11" fill="#ffd93d">✦</text>
+            <text x="8"  y="72" font-size="9"  fill="#ffd93d" opacity="0.7">✦</text>
+          </svg>
+        </div>
+        <h2 class="card-title">エアコンクリーニング</h2>
+        <span class="card-tag">CLEANING</span>
+        <p class="card-desc">プロのお掃除でエアコンすっきり♪ 快適な空気で毎日を気持ちよく。お見積もり無料です。</p>
+        <a class="card-btn" href="aircon/index.html">
+          詳しく見る <span class="arrow">→</span>
+        </a>
+      </article>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Made with <span class="heart">♥</span> by ふれとも</p>
+    <p style="margin-top:6px;">&copy; 2026 ふれとも portal</p>
+  </footer>
+
+<script>
+  /* ===== カードクリックで紙吹雪を散らす ===== */
+  const colors = ['#ff6b9d','#ffa94d','#ffd93d','#6bcf7f','#4d96ff','#c779ff','#ffa4c5'];
+
+  function confetti(x, y) {
+    const n = 24;
+    for (let i = 0; i < n; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(el);
+
+      const angle = (Math.PI * 2 * i) / n + (Math.random() - 0.5);
+      const dist  = 80 + Math.random() * 140;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist + 200;
+      const rot = (Math.random() - 0.5) * 720;
+
+      el.animate(
+        [
+          { transform: 'translate(0,0) rotate(0)', opacity: 1 },
+          { transform: `translate(${dx}px,${dy}px) rotate(${rot}deg)`, opacity: 0 }
+        ],
+        { duration: 1100 + Math.random() * 400, easing: 'cubic-bezier(.2,.7,.3,1)' }
+      ).onfinish = () => el.remove();
+    }
+  }
+
+  document.querySelectorAll('.card-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const r = btn.getBoundingClientRect();
+      confetti(r.left + r.width / 2, r.top + r.height / 2);
+    });
+  });
+
+  /* ===== カードを少し傾ける（PCのみ） ===== */
+  const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (isFinePointer) {
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width  - 0.5;
+        const py = (e.clientY - r.top)  / r.height - 0.5;
+        card.style.transform = `translateY(-14px) rotateX(${(-py*6).toFixed(2)}deg) rotateY(${(px*6).toFixed(2)}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  /* ===== ロゴをクリックで弾む ===== */
+  const logo = document.querySelector('.logo-emoji');
+  if (logo) {
+    logo.style.cursor = 'pointer';
+    logo.addEventListener('click', (e) => {
+      const r = logo.getBoundingClientRect();
+      confetti(r.left + r.width / 2, r.top + r.height / 2);
+    });
+  }
+</script>
+</body>
+</html>
